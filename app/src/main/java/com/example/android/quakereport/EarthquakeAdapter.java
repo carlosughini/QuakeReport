@@ -81,7 +81,6 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
         if (location.contains(LOCATION_SEPARATOR)) {
             String[] newLocation = location.split("(?<=of)");
-            Log.v("EarthQuakeAdapter","String é: " + Arrays.toString(newLocation));
             locationOffSet = newLocation[0];
             primaryLocation = newLocation[1];
         } else {
