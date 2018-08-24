@@ -6,7 +6,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * Helper methods related to requesting and receiving earthquake data from USGS.
@@ -47,18 +50,25 @@ public final class QueryUtils {
         // Catch the exception so the app doesn't crash, and print the error message to the logs.
         try {
 
+            // Create a JSONObject from the SAMPLE_JSON_RESPONSE string
             JSONObject earthquakeJson = new JSONObject(SAMPLE_JSON_RESPONSE);
 
+            // Extract the JSONArray associated with the key called "features",
+            // which represents a list of features (or earthquakes).
             JSONArray features = earthquakeJson.getJSONArray("features");
 
-            // build up a list of Earthquake objects with the corresponding data.
+            // For each earthquake in the features array, create an {@link Earthquake} object
             for (int i = 0; i < features.length(); i++) {
+                // All of our code in the loop
                 JSONObject featuresObject = features.getJSONObject(i);
                 JSONObject properties = featuresObject.getJSONObject("properties");
-                Log.v("QueryUtils",String.valueOf(properties.getDouble("mag")));
-                //Log.v("QueryUtils","Size: " + properties);
-                earthquakes.add(new Earthquake(String.valueOf(properties.getDouble("mag")),properties.getString("place"),String.valueOf(properties.getInt("time"))));
 
+                Double magnitude = properties.getDouble("mag");
+                String location = properties.getString("place");
+                long timeInMilliSeconds = properties.getLong("time");
+
+                Earthquake earthquake = new Earthquake(magnitude,location,timeInMilliSeconds);
+                earthquakes.add(earthquake);
             }
 
         } catch (JSONException e) {
