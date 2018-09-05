@@ -47,7 +47,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="2"
-            android:textColor="@color/textColorEarthquakeLocation"
+            android:textColor="@color/textColorEarthquakeDetails"
             android:textSize="16sp"
             tools:text="Rio de Janeiro"/>
 

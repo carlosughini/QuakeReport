@@ -20,6 +20,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -30,6 +31,7 @@ import java.util.List;
 import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Loader;
+import android.widget.TextView;
 
 public class EarthquakeActivity extends AppCompatActivity
         implements LoaderCallbacks<List<Earthquake>> {
@@ -48,10 +50,18 @@ public class EarthquakeActivity extends AppCompatActivity
     /** Adapter for the list of earthquakes */
     private EarthquakeAdapter mAdapter;
 
+    /** TextView that show message if no earthquakes are found */
+    private TextView mEmptyTextView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.earthquake_activity);
+
+        /**
+         * Find a reference to the {@link android.widget.TextView} in the layout
+         */
+        mEmptyTextView = (TextView) findViewById(R.id.empty_text);
 
         /**
          * Find a referente to the {@link ListView} in the layout
@@ -60,6 +70,9 @@ public class EarthquakeActivity extends AppCompatActivity
 
         // Create a customArrayAdapter of earthquakes
         mAdapter = new EarthquakeAdapter(this, new ArrayList<Earthquake>());
+
+        earthquakeListView.setEmptyView(mEmptyTextView);
+
 
         /**
          * Set the adapter on the {@link ListView}
@@ -90,15 +103,19 @@ public class EarthquakeActivity extends AppCompatActivity
         // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
         // because this activity implements the LoaderCallbacks interface).
         loaderManager.initLoader(EARTHQUAKE_LOADER_ID, null, this);
+
+        Log.v(TAG,"OnCreate");
     }
 
     @Override
     public Loader<List<Earthquake>> onCreateLoader(int id, Bundle args) {
+        Log.v(TAG,"OnCreateLoader");
         return new EarthquakeLoader(this,USGS_REQUEST_URL);
     }
 
     @Override
     public void onLoadFinished(Loader<List<Earthquake>> loader, List<Earthquake> earthquakes) {
+        Log.v(TAG,"OnLoadFinished");
         // Limpa o adapter de dados de earthquake anteriores
         mAdapter.clear();
 
@@ -108,49 +125,14 @@ public class EarthquakeActivity extends AppCompatActivity
          */
         if (earthquakes != null && !earthquakes.isEmpty()) {
             mAdapter.addAll(earthquakes);
+        } else {
+            mEmptyTextView.setText(R.string.no_earthquakes);
         }
     }
 
     @Override
     public void onLoaderReset(Loader<List<Earthquake>> loader) {
+        Log.v(TAG,"OnLoaderReset");
         mAdapter.clear();
-    }
-
-    private class EarthQuakeAsyncTask extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... strings) {
-            // Create URL object
-            URL url = QueryUtils.createUrl(strings[0]);
-
-            // Perform the HTTP request to the URL and receive a JSON response back
-            String jsonResponse = "";
-            try {
-                jsonResponse = QueryUtils.makeHttpRequest(url);
-            } catch (IOException e) {
-                // TODO Handle the IOException
-            }
-
-            return jsonResponse;
-        }
-
-        @Override
-        protected void onPostExecute(String jsonResponse) {
-            super.onPostExecute(jsonResponse);
-
-            updateUi(jsonResponse);
-        }
-    }
-
-    private void updateUi(String jsonResponse) {
-
-
-        /**
-         * Get the list of earthquakes from {@link QueryUtils}
-         */
-        final List<Earthquake> earthquakes = QueryUtils.extractEarthquakes(jsonResponse);
-
-
-
     }
 }
