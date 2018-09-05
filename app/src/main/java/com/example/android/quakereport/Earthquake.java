@@ -20,7 +20,8 @@ public class Earthquake {
      *
      * @param magnitude is the magnitude of the earthquake
      * @param location is the city where happened the earthquake
-     * @param timeInMilliseconds is the time in milli seconds when happened the earthquake.
+     * @param timeInMilliseconds is the time in milli seconds when happened the earthquake
+     * @param url is the time in milli seconds when happened the earthquake
      */
     public Earthquake(Double magnitude, String location, long timeInMilliseconds, String url) {
         mMagnitude = magnitude;
