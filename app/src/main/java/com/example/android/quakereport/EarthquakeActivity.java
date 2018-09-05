@@ -31,6 +31,7 @@ import java.util.List;
 import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Loader;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class EarthquakeActivity extends AppCompatActivity
@@ -53,6 +54,9 @@ public class EarthquakeActivity extends AppCompatActivity
     /** TextView that show message if no earthquakes are found */
     private TextView mEmptyTextView;
 
+    /** Progress bar that indicates to the user if the data is loading */
+    private ProgressBar mProgressBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +68,7 @@ public class EarthquakeActivity extends AppCompatActivity
         mEmptyTextView = (TextView) findViewById(R.id.empty_text);
 
         /**
-         * Find a referente to the {@link ListView} in the layout
+         * Find a reference to the {@link ListView} in the layout
          */
         ListView earthquakeListView = (ListView) findViewById(R.id.list);
 
@@ -72,6 +76,11 @@ public class EarthquakeActivity extends AppCompatActivity
         mAdapter = new EarthquakeAdapter(this, new ArrayList<Earthquake>());
 
         earthquakeListView.setEmptyView(mEmptyTextView);
+
+        /**
+         * Find a reference to the {@link ProgressBar} in the layout
+         */
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
 
         /**
@@ -103,19 +112,18 @@ public class EarthquakeActivity extends AppCompatActivity
         // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
         // because this activity implements the LoaderCallbacks interface).
         loaderManager.initLoader(EARTHQUAKE_LOADER_ID, null, this);
-
-        Log.v(TAG,"OnCreate");
     }
 
     @Override
     public Loader<List<Earthquake>> onCreateLoader(int id, Bundle args) {
-        Log.v(TAG,"OnCreateLoader");
         return new EarthquakeLoader(this,USGS_REQUEST_URL);
     }
 
     @Override
     public void onLoadFinished(Loader<List<Earthquake>> loader, List<Earthquake> earthquakes) {
-        Log.v(TAG,"OnLoadFinished");
+        // Set the progressbar visibility to invisible
+        mProgressBar.setVisibility(View.INVISIBLE);
+
         // Limpa o adapter de dados de earthquake anteriores
         mAdapter.clear();
 
